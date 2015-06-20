@@ -5,6 +5,8 @@
 (setq b 5)
 
 ;;another way is
+
+;; Note: quoting an argument in LISP just returns that argument without evaluating it
 (set 'c 10)
 
 (+ a b c)
@@ -51,6 +53,8 @@
 
 )
 
+
+;; this is how you invoke a function in LISP
 (printChocolate 1)
 
  
@@ -60,10 +64,13 @@
 
 (defun cube (x) (* x x x))
 
+(setq sq 'square)
 
 ;; funcall expression computes the value of function
 (defun operation  (fn x)  (funcall fn x )   )
 
+;; sq is now a function reference to square function
+(operation sq 3)
 ;; here we are passing  cube function as a parameter to operation
 ;; note when we ae quoting it, it means that e do not want the function to be evaluated but to be treated as a variable
 (operation  'cube   3  )
@@ -83,7 +90,7 @@
 ;;apply takes a function name and a list of objects, then calls the function with those objects as separate arguments
 ;; note: the semantics of apply in LISP are different than those in Appians SAIL language
 ;; the semantics of apply in LISP are very similar to the semantics of apply in JavaScript
-;; so apply is like a function which "spreads" the given list into argumemnts
+;; so apply is like a function which "spreads" the given list into arguments of the function which it calls
 (apply '+ '( 2 7 8 ) )
 ;;same thing...
 (apply (function +)  '(2 3 4) )
@@ -117,6 +124,70 @@
 (mapcar 'atom '(2 1 3))  ;; t t t
 
 
-
 (mapcar 'upcase '("chetan" "Mac" "trinity"))
+
+(1+ 6)
+
+(setq d 5)
+
+
+;; the list function creates a list with the given arguments
+;; it also evaluates the list arguments
+(list 1 3 2  )
+
+(list 1 2 1 (* 9 4) )   ;; outputs (1 2 1 36)
+
+(list 1 2 1 '(* 9 3))   ;; outputs (1 2 1 (* 9 3)) , since the the last argument is quoted
+
+
+(apply 'list '(2 3 1 7)) ;; outputs (2 3 1 7)
+
+
+;; The special marker ‘,’ inside of the argument to backquote indicates a value that isn’t constant. The Emacs Lisp evaluator evaluates the argument of ‘,’, and puts the value in the list structure:
+`(2 3 4 ,(+ 3 2) )
+
+`(1 2 ,(+ 3 (+ 4 5) ))
+
+
+;; Macros enable you to define new control constructs and other language features. A macro is defined much like a function, but instead of telling how to compute a value, it tells how to compute another Lisp expression which will in turn compute the value. We call this expression the expansion of the macro.
+
+;;Macros can do this because they operate on the unevaluated expressions for the arguments, not on the argument values as functions do. They can therefore construct an expansion containing these argument expressions or parts of them.
+
+;;If you are using a macro to do something an ordinary function could do, just for the sake of speed, consider using an inline function instead. See section Inline Functions.
+
+;;Suppose we would like to define a Lisp construct to increment a variable value, much like the ++ operator in C. We would like to write (inc x) and have the effect of (setq x (1+ x)). Here's a macro definition that does the job: 
+(defmacro inc (var)
+
+  (list 'setq var (list '1+ var) )
+  
+  )
+
+;;When this is called with (inc x), the argument var has the value x---not the value of x. The body of the macro uses this to construct the expansion, which is (setq x (1+ x)). Once the macro definition returns this expansion, Lisp proceeds to evaluate it, thus incrementing x. 
+
+(setq y -3)
+(inc y)
+
+
+;;A list quoted with the backquote is quoted except for the elements prefixed with a comma. Those are evaluated before inserting. Therefore `(1 2 ,(+ 3 4)) ⇒ (1 2 7).
+(inc y)
+`(2 3 ,(       + 3 4))
+
+(defmacro incbytwo (var)
+
+  `(setq ,var (+ 2  ,var))
+
+  )
+
+(setq x 8)
+
+(incbytwo x)
+
+;;the inc by one example can be re-written using backquotes as:
+(defmacro ++ (var)
+  `(setq ,var (1+ ,var) )
+  )
+
+(++ x)
+
+;; macros in LISP are thus a way to extend the syntax of the language and introducing newer semantics
 
