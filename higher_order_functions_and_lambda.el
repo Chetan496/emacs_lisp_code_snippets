@@ -170,7 +170,8 @@
 
 ;;A list quoted with the backquote is quoted except for the elements prefixed with a comma. Those are evaluated before inserting. Therefore `(1 2 ,(+ 3 4)) ⇒ (1 2 7).
 (inc y)
-`(2 3 ,(       + 3 4))
+`(2 3 ,(       + 3 (* 6 7 4)  ))
+
 
 (defmacro incbytwo (var)
 
@@ -191,3 +192,19 @@
 
 ;; macros in LISP are thus a way to extend the syntax of the language and introducing newer semantics
 
+
+;;funnyAdder takes one required and one optional arg.
+;; if only one arg is provided it will add 2 to it and return
+;; else it will add both given numbers
+(defun funnyAdder (x &optional y)
+
+  (if y
+      (+ x y)
+    (+ 2 x)
+    )
+  )
+
+
+
+(funnyAdder 2 6)
+(funnyAdder 5)
